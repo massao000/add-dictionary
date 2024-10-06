@@ -1,0 +1,141 @@
+conjugation1:
+- '*'
+- 五段・カ行
+- 五段・ガ行
+- 五段・サ行
+- 五段・タ行
+- 五段・ナ行
+- 五段・バ行
+- 五段・マ行
+- 五段・ラ行
+conjugation2:
+- '*'
+- 未然形
+- 連用形
+- 終止形
+- 連体形
+- 仮定形
+- 命令形
+cost_choices:
+- -988
+- 1
+- -100
+- 6048
+- 8609
+- 9110
+pos_choices:
+- 動詞
+- 形容詞
+- 形容動詞
+- 名詞
+- 副詞
+- 連体詞
+- 接続詞
+- 感動詞
+- 助動詞
+- 助詞
+- 記号
+- その他
+pos_type_choices:
+- '*'
+- 一般
+- 固有名詞
+- 固有動詞
+pos_type_choices2:
+- '*'
+- 一般
+- 人名
+- 地域
+pos_type_choices3:
+- '*'
+- 一般
+- 名
+- 姓
+preset:
+  ADJECTIVE:
+    cost_candidates:
+    - 1527
+    - 3266
+    - 3561
+    - 3857
+    - 4153
+    - 4449
+    - 5149
+    - 5849
+    - 6549
+    - 7250
+    - 10001
+    part_of_speech: 形容詞
+    part_of_speech_detail_1: 自立
+    part_of_speech_detail_2: '*'
+    part_of_speech_detail_3: '*'
+  COMMON_NOUN:
+    cost_candidates:
+    - -4445
+    - 49
+    - 1473
+    - 2897
+    - 4321
+    - 5746
+    - 6554
+    - 7362
+    - 8170
+    - 8979
+    - 15001
+    part_of_speech: 名詞
+    part_of_speech_detail_1: 一般
+    part_of_speech_detail_2: '*'
+    part_of_speech_detail_3: '*'
+  PROPER_NOUN:
+    cost_candidates:
+    - -988
+    - 3488
+    - 4768
+    - 6048
+    - 7328
+    - 8609
+    - 8734
+    - 8859
+    - 8984
+    - 9110
+    - 14176
+    part_of_speech: 名詞
+    part_of_speech_detail_1: 固有名詞
+    part_of_speech_detail_2: 一般
+    part_of_speech_detail_3: '*'
+  SUFFIX:
+    cost_candidates:
+    - 4399
+    - 5373
+    - 6041
+    - 6710
+    - 7378
+    - 8047
+    - 9440
+    - 10834
+    - 12228
+    - 13622
+    - 15847
+    part_of_speech: 名詞
+    part_of_speech_detail_1: 接尾
+    part_of_speech_detail_2: 一般
+    part_of_speech_detail_3: '*'
+  VERB:
+    cost_candidates:
+    - 3100
+    - 6160
+    - 6360
+    - 6561
+    - 6761
+    - 6962
+    - 7414
+    - 7866
+    - 8318
+    - 8771
+    - 13433
+    part_of_speech: 動詞
+    part_of_speech_detail_1: 自立
+    part_of_speech_detail_2: '*'
+    part_of_speech_detail_3: '*'
+system:
+  save_csv_path: 

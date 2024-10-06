@@ -1,0 +1,6 @@
+TkEasyGUI
+kanjize
+jaconv
+pykakasi
+pyyaml
+icecream
