@@ -79,7 +79,7 @@ def write_csv(file_path, matrix):
         writer = csv.writer(f)
         writer.writerows(matrix)
     # ic(f"{file_path}に保存しました。")
-    eg.popup_auto_close(f"{file_path}に保存しました。")
+    eg.popup_auto_close(f"{file_path}に保存しました。", auto_close_duration=2)
 
 # CSVファイルの語尾に追記関数
 def appending_csv(file_path, data):
@@ -87,7 +87,7 @@ def appending_csv(file_path, data):
         writer = csv.writer(f)
         writer.writerow(data)
     # ic(f"{file_path}に保存しました。")
-    eg.popup_auto_close(f"{file_path}に保存しました。")
+    eg.popup_auto_close(f"{file_path}に保存しました。", auto_close_duration=2)
 
 # CSVファイルから読み込んだデータを特定のインデックスで上書きする関数
 def update_row_in_matrix(matrix, index, new_list, log_file):
@@ -122,7 +122,7 @@ def log_change(log_file, operation, index, old_list=None, new_list=None):
         elif operation == 'delete':
             file.write(f"[{timestamp}] Index {index} removed: {old_list}\n")
     # ic(f"ログファイル {log_file} に変更内容を保存しました。")
-    eg.popup_auto_close(f"ログファイル {log_file} に変更内容を保存しました。")
+    eg.popup_auto_close(f"ログファイル {log_file} に変更内容を保存しました。", auto_close_duration=1)
 
 # 入力のリセット
 def input_reset(window):
@@ -349,31 +349,31 @@ while True:
         # 重複の確認
         reader = read_csv(csv_filename)
         for i in reader:
-            if i[0] == values["-WORD"]:
-                eg.popup_error('単語が辞書データと重複しています')
-                continue
-
-        if csv_filename:
-            data = [
-                values["-WORD"],
-                '',
-                '',
-                values["-COST"],
-                values["-POS"],
-                values["-POS_SUBCATEGORY1"],
-                values["-POS_SUBCATEGORY2"],
-                values["-POS_SUBCATEGORY3"],
-                values["-CONJUGATION1"],
-                values["-CONJUGATION2"],
-                fullwidth_conversion(values["-WORD"]),
-                values["-KANA"],
-                values["-PRONUNCIATION"],
-                f'{values["-ACCENT"]}/{count_without_lowercase(values["-KANA"])}',
-                values["-STAR"]]
-            appending_csv(csv_filename, data)
-                
-            reader = read_csv(csv_filename)
-            window['-TABLE_DATA'].update(values=reader)
+            if i[0] == values["-WORD"] and i[11] == values["-KANA"]:
+                eg.popup_error('単語と読みが辞書データと重複しています')
+                break
+        else:
+            if csv_filename:
+                data = [
+                    values["-WORD"],
+                    '',
+                    '',
+                    values["-COST"],
+                    values["-POS"],
+                    values["-POS_SUBCATEGORY1"],
+                    values["-POS_SUBCATEGORY2"],
+                    values["-POS_SUBCATEGORY3"],
+                    values["-CONJUGATION1"],
+                    values["-CONJUGATION2"],
+                    fullwidth_conversion(values["-WORD"]),
+                    values["-KANA"],
+                    values["-PRONUNCIATION"],
+                    f'{values["-ACCENT"]}/{count_without_lowercase(values["-KANA"])}',
+                    values["-STAR"]]
+                appending_csv(csv_filename, data)
+                    
+                reader = read_csv(csv_filename)
+                window['-TABLE_DATA'].update(values=reader)
     
     # 辞書の書き換え
     if event == '-DICT_UP-' and values['-RAD_UPDATE']:
@@ -383,7 +383,7 @@ while True:
             else:
                 continue
                 
-            ic(table_index)
+            # ic(table_index)
             if table_index:
                 data = [
                     values["-WORD"],
