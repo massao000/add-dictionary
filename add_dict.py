@@ -157,7 +157,7 @@ pos_type_choices = yaml_data['pos_type_choices']  # 品詞細分類
 pos_type_choices2 = yaml_data['pos_type_choices2']  # 品詞細分類
 pos_type_choices3 = yaml_data['pos_type_choices3']  # 品詞細分類
 conjugation1 = yaml_data['conjugation1'] # 活用型
-conjugation2 = yaml_data['conjugation2'] # 活用型
+conjugation2 = yaml_data['conjugation2'] # 活用形
 
 
 word_type_data = yaml_data['preset']
