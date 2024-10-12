@@ -138,4 +138,4 @@ preset:
     part_of_speech_detail_2: '*'
     part_of_speech_detail_3: '*'
 system:
-  save_csv_path: 
+  save_csv_path: user_dict.csv
