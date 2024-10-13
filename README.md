@@ -4,6 +4,9 @@ OpenJTalkのユーザ辞書をGUIで追加するアプリ
 
 # 使い方
 
+YouTube デモ動画\
+https://youtu.be/v1CMfifnyPA?si=1znBLJhBMRGVfWjb
+
 ## 仮想環境の作成
 
 ```
