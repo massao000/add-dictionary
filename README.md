@@ -13,7 +13,7 @@ https://youtu.be/v1CMfifnyPA?si=1znBLJhBMRGVfWjb
 
 Windowsの方
 
-- 環境構築なしで使える[zipファイル](\https://github.com/massao000/add-dictionary/releases/download/1.0.0/add-dictionary.zip)をダウンロードし、解凍します。
+- 環境構築なしで使える[zipファイル](https://github.com/massao000/add-dictionary/releases/download/1.0.0/add-dictionary.zip)をダウンロードし、解凍します。
 - `add_dict.exe` をダブルクリックすると起動します。
 
 ### GitとPythonを使う
