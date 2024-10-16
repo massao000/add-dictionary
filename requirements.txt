@@ -4,3 +4,6 @@ jaconv
 pykakasi
 pyyaml
 icecream
+pyopenjtalk
+simpleaudio
+tempfile
