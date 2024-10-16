@@ -9,6 +9,10 @@ from icecream import ic
 import yaml
 from pathlib import Path
 from datetime import datetime
+import pyopenjtalk
+import simpleaudio
+import numpy as np
+import tempfile
 
 def is_lowercase_japanese(char):
     # Unicodeカテゴリが "Lo"（Letter, other）で拗音などの小さい文字を判定
@@ -66,6 +70,64 @@ def convert_text(text):
     
     return katakana_text
 
+def delete_old_tmp_files(directory):
+    """
+    指定されたディレクトリ内の最新のtmpファイル以外のファイルを削除します。
+
+    Args:
+        directory: 対象のディレクトリパス
+    """
+
+    # ディレクトリパスをPathオブジェクトに変換
+    dir_path = Path(directory)
+
+    # tmpファイルのパスをリストで取得
+    tmp_files = list(dir_path.glob('*.dic'))
+
+    # 更新日時でソート (降順: 最新のファイルが先頭に来る)
+    tmp_files.sort(key=lambda x: x.stat().st_mtime, reverse=True)
+
+    # 最新のファイル以外のファイルを削除
+    for file in tmp_files[1:]:
+        file.unlink()
+
+def trial_listening(word, data):
+    """単語の視聴
+
+    Args:
+        word (_type_): 単語
+        data (_type_): 辞書データ
+    """
+    
+    # 作成したいディレクトリのパス
+    directory_path = Path("tmp")
+
+    # ディレクトリを作成
+    directory_path.mkdir(parents=True, exist_ok=True)
+    
+    with open(f'{directory_path}/tmp_user_dict.csv', mode='w', newline='', encoding='utf-8') as f:
+        writer = csv.writer(f)
+        writer.writerow(data)
+    
+    # 特定のディレクトリに一時ファイルを作成
+    with tempfile.NamedTemporaryFile(dir=directory_path, suffix='.dic') as tmp_file:
+        # print(tmp_file.name)
+        pass
+    
+    delete_old_tmp_files(directory_path)
+    
+    # 辞書のアップデート
+    pyopenjtalk.mecab_dict_index(f.name, tmp_file.name)
+    pyopenjtalk.update_global_jtalk_with_user_dict(tmp_file.name)
+
+    # TTS
+    x, sr = pyopenjtalk.tts(word)
+
+    # 音声の再生
+    wave_obj = simpleaudio.WaveObject(x.astype(np.int16), num_channels=1, sample_rate=sr)
+    play_obj = wave_obj.play()
+    play_obj.wait_done()
+    
 
 # CSVファイルを読み込む関数
 def read_csv(file_path):
@@ -124,6 +186,7 @@ def log_change(log_file, operation, index, old_list=None, new_list=None):
     # ic(f"ログファイル {log_file} に変更内容を保存しました。")
     eg.popup_auto_close(f"ログファイル {log_file} に変更内容を保存しました。", auto_close_duration=1)
 
+
 # 入力のリセット
 def input_reset(window):
     window['-WORD'].update('')
@@ -142,6 +205,36 @@ def input_reset(window):
     window['-CONJUGATION2'].update('*')
     window['-ACCENT'].update(0)
     window['-STAR'].update('*')
+
+def dictionary_datas(values):
+    """単語の登録データ
+
+    Args:
+        values (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
+    word = fullwidth_conversion(values["-WORD"])
+    data = [
+        word,
+        '',
+        '',
+        values["-COST"],
+        values["-POS"],
+        values["-POS_SUBCATEGORY1"],
+        values["-POS_SUBCATEGORY2"],
+        values["-POS_SUBCATEGORY3"],
+        values["-CONJUGATION1"],
+        values["-CONJUGATION2"],
+        word,
+        values["-KANA"],
+        values["-PRONUNCIATION"],
+        f'{values["-ACCENT"]}/{count_without_lowercase(values["-KANA"])}',
+        values["-STAR"]]
+    
+    return data
+    
 
 with open('config.yaml', encoding="UTF-8") as f:
     yaml_data = yaml.safe_load(f)
@@ -187,6 +280,7 @@ layout1 = [
     [eg.Text('活用形', size=(15, 1)), eg.Combo(conjugation2, default_value='*', key='-CONJUGATION2')],
     [eg.Text('アクセント', size=(15, 1)), eg.Combo([], default_value=0, key='-ACCENT')],
     [eg.Text('アクセント結合規則', size=(15, 1)), eg.Combo(['*',"C1","C2","C3","C4","C5",], key='-STAR', default_value='*')],
+    [eg.Button('試聴', key='-LISTENING-')],
     [eg.Button('追加', color='blue', key='-CSV-', disabled=False), eg.Button('更新', key='-DICT_UP-', disabled=True), eg.Button('削除', key='-DICT_DELETE-', disabled=True), eg.Button('初期化', color='blue', key='-RESET-')]
 ]
 
@@ -230,6 +324,23 @@ while True:
     
     # ic(values)
     
+    # 単語の視聴
+    if event == '-LISTENING-':
+        if not values["-WORD"]:
+            eg.popup_error('単語が入力されていません')
+            continue
+        elif not values["-KANA"]:
+            eg.popup_error('読み方が入力されていません')
+            continue
+        elif not values["-COST"]:
+            eg.popup_error('コストが入力されていません')
+            continue
+        else:
+
+            data = dictionary_datas(values)
+            
+            trial_listening(values["-WORD"], data)
+    
     if '-RAD_' in event:
         try:
             if values['-RAD_ADD'] == True:
@@ -265,7 +376,8 @@ while True:
         eg.popup(f"保存/書き込みファイルパス：{system['save_csv_path']}", "設定内容の確認")
         
     # テーブルデータをクリックしたときに入力フォームに記述する
-    if event == '-TABLE_DATA':
+    # 追加選択中はテーブルをクリックしてもデータが入力されない
+    if event == '-TABLE_DATA' and not values['-RAD_ADD'] == True:
         try:
             if values['-TABLE_DATA']:
                 table_index = values['-TABLE_DATA'][-1]
@@ -354,22 +466,8 @@ while True:
                 break
         else:
             if csv_filename:
-                data = [
-                    values["-WORD"],
-                    '',
-                    '',
-                    values["-COST"],
-                    values["-POS"],
-                    values["-POS_SUBCATEGORY1"],
-                    values["-POS_SUBCATEGORY2"],
-                    values["-POS_SUBCATEGORY3"],
-                    values["-CONJUGATION1"],
-                    values["-CONJUGATION2"],
-                    fullwidth_conversion(values["-WORD"]),
-                    values["-KANA"],
-                    values["-PRONUNCIATION"],
-                    f'{values["-ACCENT"]}/{count_without_lowercase(values["-KANA"])}',
-                    values["-STAR"]]
+                data = dictionary_datas(values)
+                
                 appending_csv(csv_filename, data)
                     
                 reader = read_csv(csv_filename)
@@ -385,22 +483,7 @@ while True:
                 
             # ic(table_index)
             if table_index:
-                data = [
-                    values["-WORD"],
-                    '',
-                    '',
-                    values["-COST"],
-                    values["-POS"],
-                    values["-POS_SUBCATEGORY1"],
-                    values["-POS_SUBCATEGORY2"],
-                    values["-POS_SUBCATEGORY3"],
-                    values["-CONJUGATION1"],
-                    values["-CONJUGATION2"],
-                    fullwidth_conversion(values["-WORD"]),
-                    values["-KANA"],
-                    values["-PRONUNCIATION"],
-                    f'{values["-ACCENT"]}/{count_without_lowercase(values["-KANA"])}',
-                    values["-STAR"]]
+                data = dictionary_datas(values)
                 
                 matrix = update_row_in_matrix(reader, table_index, data, log_file_path)
                 
