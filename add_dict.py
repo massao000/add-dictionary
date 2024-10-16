@@ -310,7 +310,7 @@ layout = [
 
 # ウィンドウを作成
 # window = eg.Window('辞書作成', layout, keep_on_top=True)
-window = eg.Window('辞書作成', layout, resizable=True)
+window = eg.Window('辞書作成 v1.1.0', layout, resizable=True)
 
 log_file_path = 'add_dict_changes.log'
 
